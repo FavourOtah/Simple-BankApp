@@ -7,12 +7,16 @@ import accountRoutes from "./routes/account.route.js";
 import transactionRoutes from "./routes/transaction.route.js"
 
 
+
+
 dotenv.config();
 const app = express();
 
 
 app.use(express.json());
 app.use(cookieParser());
+
+const PORT = (process.env.MONGO_URL) || 6050
 
 
 //estabishing connection with database
@@ -29,4 +33,4 @@ mongoose.connect(process.env.MONGO_URL)
 app.use(userRoutes)
 app.use(accountRoutes)
 app.use(transactionRoutes)
-app.listen(6050, () => { console.log("The server is up and running") })
+app.listen(PORT, () => { console.log("The server is up and running") })
