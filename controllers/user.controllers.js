@@ -46,7 +46,7 @@ const loginUser = async (req, res) => {
         };
 
         //checking to see if the user exists in the database via the email 
-        const userExist = await userModel.findOne({ email })
+        const userExist = await userModel.findOne({ email }).select("-password")
 
         if (!userExist) {
             return res.status(404).json({ message: "Account not found" })

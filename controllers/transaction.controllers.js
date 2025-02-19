@@ -12,10 +12,10 @@ const internalTransfer = async (req, res) => {
     };
 
     //if all checks, we get the payload
-    const { senderAccount, receiverAccount, amount, transactionType } = req.body
+    const { senderAccountNumber, receiverAccountNumber, amount, transactionType } = req.body
 
     //to check if the user types same account details twice
-    if (senderAccount === receiverAccount) {
+    if (senderAccountNumber === receiverAccountNumber) {
         return res.status(400).json({ message: "Same account details filled twice" })
     };
 
@@ -27,8 +27,10 @@ const internalTransfer = async (req, res) => {
         //getting the sender and receiver account
         //checking if the accounts actually exist in the database
 
-        const sender = await accountModel.findById(senderAccount).populate("user_id",).session(session);
-        const receiver = await accountModel.findById(receiverAccount).populate("user_id").session(session);
+        const sender = await accountModel.findOne({ account_no: senderAccountNumber }).populate("user_id",).session(session);
+        const receiver = await accountModel.findOne({ account_no: receiverAccountNumber }).populate("user_id").session(session);
+
+        console.log(sender)
 
         //if not found
         if (!sender || !receiver) {
@@ -56,7 +58,7 @@ const internalTransfer = async (req, res) => {
         receiver.balance += amount;
 
         //creating saving the transaction to the database
-        const savedTransaction = await transactionModel.create([{ senderAccount, receiverAccount, amount, transactionType }], { session });
+        const savedTransaction = await transactionModel.create([{ senderAccountNumber, receiverAccountNumber, amount, transactionType }], { session });
 
         const newTransactionId = savedTransaction[0]._id;
 
@@ -95,7 +97,7 @@ const externalTransfer = async (req, res) => {
     };
 
     //if all checks, we get the payload
-    const { senderAccount, receiverAccount, amount, transactionType } = req.body
+    const { senderAccountNumber, receiverAccountNumber, amount, transactionType } = req.body
 
     //initiating a mongoose session for transactions
     const session = await mongoose.startSession();
@@ -103,8 +105,8 @@ const externalTransfer = async (req, res) => {
 
 
     try {
-        const sender = await accountModel.findById(senderAccount).populate("user_id").session(session);
-        const receiver = await accountModel.findById(receiverAccount).populate("user_id").session(session);
+        const sender = await accountModel.findOne({ account_no: senderAccountNumber }).populate("user_id",).session(session);
+        const receiver = await accountModel.findOne({ account_no: receiverAccountNumber }).populate("user_id").session(session);
 
         if (!sender || !receiver) {
             throw new Error("One or both accounts not found");
@@ -125,7 +127,7 @@ const externalTransfer = async (req, res) => {
 
         //creating transaction record
         const newTransaction = await transactionModel.create(
-            [{ senderAccount, receiverAccount, amount, transactionType }], { session }
+            [{ senderAccountNumber, receiverAccountNumber, amount, transactionType }], { session }
         );
 
         //getting unique transaction id
