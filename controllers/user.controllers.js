@@ -46,7 +46,7 @@ const loginUser = async (req, res) => {
         };
 
         //checking to see if the user exists in the database via the email 
-        const userExist = await userModel.findOne({ email }).select("-password")
+        const userExist = await userModel.findOne({ email }).select("password")
 
         if (!userExist) {
             return res.status(404).json({ message: "Account not found" })
@@ -63,7 +63,7 @@ const loginUser = async (req, res) => {
         const token = jwt.sign({ id: userExist.id, }, process.env.JWT_SECRET, {})
 
         //creating and returning  COOKIE THt contains the created token unique to the logged in user
-        return res.cookie("token", token, { httpOnly: true, secure: false }).status(200).json(userExist)
+        return res.cookie("token", token, { httpOnly: true, secure: false }).status(200).json({ name: userExist.name, email: userExist.email })
     } catch (error) {
         res.status(500).json({ message: "Something went wrong" })
     };
