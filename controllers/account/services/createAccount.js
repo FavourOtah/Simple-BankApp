@@ -1,10 +1,10 @@
-import accountModel from "../models/account.model.js";
-import userModel from "../models/user.model.js";
+import accountModel from "../../../models/account.model.js";
+import userModel from "../../../models/user.model.js";
 import mongoose from "mongoose";
 
-const createAccount = async (req, res) => {
+export const createAccount = async (req, res) => {
     //the logic here is that only logged in users are able to create accounts. 
-    const id = new mongoose.Types.ObjectId(req.user)
+    const id = (req.user)
 
     try {
         //to know if the user is logged in by checking for id from the verified token
@@ -38,5 +38,3 @@ const createAccount = async (req, res) => {
 
     }
 };
-
-export default createAccount

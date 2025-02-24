@@ -16,7 +16,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-const PORT = (process.env.MONGO_URL) || 6050
+const PORT = process.env.PORT
 
 
 //estabishing connection with database
@@ -25,8 +25,10 @@ mongoose.connect(process.env.MONGO_URL)
         console.log("Connection to Database Succesful")
     })
 
-    .catch(() => {
+    .catch((error) => {
+
         console.log("Something went wrong")
+        console.log(error)
     })
 
 
